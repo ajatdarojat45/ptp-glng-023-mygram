@@ -5,6 +5,8 @@ import(
 	"github.com/gin-gonic/gin"
 	"mygram/models"
 	"net/http"
+	"golang.org/x/crypto/bcrypt"
+	"mygram/helpers"
 )
 
 type UserDB struct {
@@ -35,8 +37,30 @@ func (db *UserDB) Register(c *gin.Context){
 }
 
 func (db *UserDB) Login(c *gin.Context){
-	c.JSON(201, gin.H{
-		"token": "string",
+	var req models.User
+
+	err := c.ShouldBindJSON(&req);
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err);
+	}
+
+	dbResult := models.User{}
+	errUser := db.DB.Debug().Where("email = ?", req.Email).Last(&dbResult).Error
+	if errUser != nil {
+		c.AbortWithError(http.StatusInternalServerError, errUser)
+		return
+	}
+
+	errBcrypt := bcrypt.CompareHashAndPassword([]byte(dbResult.Password), []byte(req.Password))
+	if errBcrypt != nil {
+		c.AbortWithError(http.StatusBadRequest, errBcrypt)
+		return
+	}
+
+	token := helpers.GenerateToken(req.Username)
+
+	c.JSON(200, gin.H{
+		"token": token,
 	})
 }
 

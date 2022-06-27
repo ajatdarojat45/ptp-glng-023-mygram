@@ -20,6 +20,7 @@ func main(){
 	})
 
 	router.POST("/users/register", UserController.Register)
+	router.POST("/users/login", UserController.Login)
 	router.POST("/photos", PhotoController.CreatedPhoto)
 
 	router.Run(":3000")
