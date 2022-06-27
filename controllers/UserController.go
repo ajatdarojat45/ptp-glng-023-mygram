@@ -3,6 +3,8 @@ package controllers
 import(
 	"gorm.io/gorm"
 	"github.com/gin-gonic/gin"
+	"mygram/models"
+	"net/http"
 )
 
 type UserDB struct {
@@ -10,11 +12,25 @@ type UserDB struct {
 }
 
 func (db *UserDB) Register(c *gin.Context){
+	var req models.User
+
+	err := c.ShouldBindJSON(&req);
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errCreate := db.DB.Debug().Create(&req).Error
+	if errCreate != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+
 	c.JSON(201, gin.H{
-		"age": "int",
-		"email": "string",
-		"id": "int",
-		"username": "string",
+		"age": req.Age,
+		"email": req.Email,
+		"id": req.ID,
+		"username": req.Username,
 	})
 }
 
