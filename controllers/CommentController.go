@@ -70,3 +70,47 @@ func (db *CommentDB) GetComments(c *gin.Context){
 
 	c.JSON(200, commentsRes)
 }
+
+func (db *CommentDB) UpdateComment(c *gin.Context){
+	id := c.Param("commentId")
+	commentId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "params photoId is required",
+		})
+		return
+	}
+
+	var comment models.Comment
+	errComment := db.DB.First(&comment, commentId).Error
+	if errComment != nil {
+		c.JSON(400, gin.H{
+			"message": "Data not found",
+		})
+		return
+	}
+
+	req := models.Comment{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	errUpdate := db.DB.Model(&comment).Updates(models.Comment{Message: req.Message}).Error
+	if errUpdate != nil {
+		c.JSON(500, gin.H{
+			"message": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(201, gin.H{
+		"id": comment.ID,
+		"message": comment.Message,
+		"photo_id": comment.Photo_Id,
+		"user_id": comment.User_Id,
+		"created_at": comment.Created_At,
+	})
+}

@@ -35,6 +35,7 @@ func main(){
 	// comments
 	router.POST("/comments", CommentController.CreateComment)
 	router.GET("/comments", CommentController.GetComments)
+	router.PUT("/comments/:commentId", CommentController.UpdateComment)
 
 	router.Run(":3000")
 }
