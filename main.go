@@ -24,14 +24,17 @@ func main(){
 	router.POST("/users/register", UserController.Register)
 	router.POST("/users/login", UserController.Login)
 	router.Use(middlewares.AuthJWT())
+	// users
 	router.PUT("/users/:id", UserController.UserUpdate)
 	router.DELETE("/users", UserController.UserDelete)
+	// photos
 	router.POST("/photos", PhotoController.CreatedPhoto)
 	router.GET("/photos", PhotoController.GetPhotos)
 	router.PUT("/photos/:id", PhotoController.UpdatePhoto)
 	router.DELETE("/photos/:id", PhotoController.DeletePhoto)
 	// comments
 	router.POST("/comments", CommentController.CreateComment)
+	router.GET("/comments", CommentController.GetComments)
 
 	router.Run(":3000")
 }

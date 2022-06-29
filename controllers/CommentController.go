@@ -37,3 +37,36 @@ func (db *CommentDB) CreateComment(c *gin.Context){
 		"created_at": req.Created_At,
 	})
 }
+
+func (db *CommentDB) GetComments(c *gin.Context){
+	var (
+		comments []models.Comment
+		commentsRes []models.CommentList
+	)
+
+	db.DB.Preload("User").Preload("Photo").Find(&comments)
+	for _,el := range comments{
+		commentsRes = append(commentsRes, models.CommentList{
+			ID: el.ID,
+			Message: el.Message,
+			Photo_Id: el.Photo_Id,
+			User_Id: el.User_Id,
+			Created_At: el.Created_At,
+			Updated_At: el.Updated_At,
+			User: models.CommentListUser{
+				ID: el.User.ID,
+				Email: el.User.Email,
+				Username: el.User.Username,
+			},
+			Photo: models.CommentListPhoto{
+				ID: el.Photo.ID,
+				Title: el.Photo.Title,
+				Caption: el.Photo.Caption,
+				Photo_Url: el.Photo.Photo_Url,
+				User_Id: el.Photo.User_Id,
+			},
+		})
+	}
+
+	c.JSON(200, commentsRes)
+}
