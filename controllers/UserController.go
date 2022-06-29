@@ -113,7 +113,29 @@ func (db *UserDB) UserUpdate(c *gin.Context){
 }
 
 func (db *UserDB) UserDelete(c *gin.Context){
-	c.JSON(201, gin.H{
-		"message": "Your account has been successfully deleted",
-	})
+	var (
+		user models.User
+		result gin.H
+	)
+
+	id := c.GetString("userId");
+	err := db.DB.First(&user, id).Error
+	if err != nil {
+		result = gin.H{
+			"result": "data not found",
+		}
+	} else {
+		errDelete := db.DB.Delete(&user).Error
+		if errDelete != nil {
+			result = gin.H{
+				"result": "delete failed",
+			}
+		}else {
+			result = gin.H{
+				"message": "Your account has been successfully deleted",
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, result)
 }
