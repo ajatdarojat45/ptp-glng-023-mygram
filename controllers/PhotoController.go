@@ -6,7 +6,6 @@ import(
 	"mygram/models"
 	"net/http"
 	"strconv"
-	// "fmt"
 )
 
 type PhotoDB struct {
@@ -22,6 +21,20 @@ func (db *PhotoDB) CreatedPhoto(c *gin.Context){
 	err := c.ShouldBindJSON(&req);
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if req.Title == "" {
+		c.JSON(400, gin.H{
+			"message": "Title is required",
+		})
+		return
+	}
+
+	if req.Photo_Url == "" {
+		c.JSON(400, gin.H{
+			"message": "Photo_Url is required",
+		})
 		return
 	}
 
