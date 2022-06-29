@@ -67,13 +67,47 @@ func (db *PhotoDB) GetPhotos(c *gin.Context){
 }
 
 func (db *PhotoDB) UpdatePhoto(c *gin.Context){
+	id := c.Param("id")
+	photoId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "params photoId is required",
+		})
+		return
+	}
+
+	var photo models.Photo
+	errPhoto := db.DB.First(&photo, photoId).Error
+	if errPhoto != nil {
+		c.JSON(400, gin.H{
+			"message": "Data not found",
+		})
+		return
+	}
+
+	req := models.Photo{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	errUpdate := db.DB.Model(&photo).Updates(models.Photo{Title: req.Title, Caption: req.Caption, Photo_Url: req.Photo_Url}).Error
+	if errUpdate != nil {
+		c.JSON(500, gin.H{
+			"message": "internal server error",
+		})
+		return
+	}
+
 	c.JSON(201, gin.H{
-		"id": "int",
-		"title": "string",
-		"caption": "int",
-		"photo_url": "string",
-		"user_id": "int",
-		"created_at": "date",
+		"id": photo.ID,
+		"title": photo.Title,
+		"caption": photo.Caption,
+		"photo_url": photo.Photo_Url,
+		"user_id": photo.User_Id,
+		"created_at": photo.Created_At,
 	})
 }
 
