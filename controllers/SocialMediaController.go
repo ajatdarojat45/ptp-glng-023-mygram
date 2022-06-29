@@ -80,7 +80,7 @@ func (db *SocialMediaDB) UpdateSocialMedia(c *gin.Context){
 	var socialMedia models.SocialMedia
 	errComment := db.DB.First(&socialMedia, socialMediaId).Error
 	if errComment != nil {
-		c.JSON(400, gin.H{
+		c.JSON(404, gin.H{
 			"message": "Data not found",
 		})
 		return
