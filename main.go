@@ -23,7 +23,7 @@ func main(){
 	router.POST("/users/register", UserController.Register)
 	router.POST("/users/login", UserController.Login)
 	router.Use(middlewares.AuthJWT())
-	router.PUT("/users", UserController.UserUpdate)
+	router.PUT("/users/:id", UserController.UserUpdate)
 	router.POST("/photos", PhotoController.CreatedPhoto)
 
 	router.Run(":3000")

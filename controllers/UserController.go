@@ -8,6 +8,7 @@ import(
 	"golang.org/x/crypto/bcrypt"
 	"mygram/helpers"
 	"fmt"
+	"strconv"
 )
 
 type UserDB struct {
@@ -66,7 +67,16 @@ func (db *UserDB) Login(c *gin.Context){
 }
 
 func (db *UserDB) UserUpdate(c *gin.Context){
-	userId := c.GetString("userId")
+	id := c.Param("id")
+	userId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		fmt.Println("error found: ", errConvert)
+		c.JSON(400, gin.H{
+			"result": "params orderId is required",
+		})
+		return
+	}
+
 	var user models.User
 	errUser := db.DB.First(&user, userId).Error
 	if errUser != nil {
