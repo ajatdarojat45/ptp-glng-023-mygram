@@ -67,12 +67,12 @@ func (db *UserDB) Login(c *gin.Context){
 }
 
 func (db *UserDB) UserUpdate(c *gin.Context){
-	id := c.Param("id")
+	id := c.Param("userId")
 	userId, errConvert := strconv.Atoi(id)
 	if errConvert != nil {
 		fmt.Println("error found: ", errConvert)
 		c.JSON(400, gin.H{
-			"result": "params orderId is required",
+			"result": "params userId is required",
 		})
 		return
 	}
@@ -80,7 +80,7 @@ func (db *UserDB) UserUpdate(c *gin.Context){
 	var user models.User
 	errUser := db.DB.First(&user, userId).Error
 	if errUser != nil {
-		c.JSON(400, gin.H{
+		c.JSON(404, gin.H{
 			"result": "Data not found",
 		})
 		return
@@ -137,5 +137,5 @@ func (db *UserDB) UserDelete(c *gin.Context){
 		}
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(200, result)
 }

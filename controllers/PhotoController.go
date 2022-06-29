@@ -67,7 +67,7 @@ func (db *PhotoDB) GetPhotos(c *gin.Context){
 }
 
 func (db *PhotoDB) UpdatePhoto(c *gin.Context){
-	id := c.Param("id")
+	id := c.Param("photoId")
 	photoId, errConvert := strconv.Atoi(id)
 	if errConvert != nil {
 		c.JSON(400, gin.H{
@@ -79,7 +79,7 @@ func (db *PhotoDB) UpdatePhoto(c *gin.Context){
 	var photo models.Photo
 	errPhoto := db.DB.First(&photo, photoId).Error
 	if errPhoto != nil {
-		c.JSON(400, gin.H{
+		c.JSON(404, gin.H{
 			"message": "Data not found",
 		})
 		return
@@ -116,7 +116,7 @@ func (db *PhotoDB) DeletePhoto(c *gin.Context){
 		photo models.Photo
 	)
 
-	id := c.Param("id")
+	id := c.Param("photoId")
 	photoId, errConvert := strconv.Atoi(id)
 	if errConvert != nil {
 		c.JSON(400, gin.H{
