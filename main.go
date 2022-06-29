@@ -38,10 +38,14 @@ func main(){
 		photoRouter.DELETE("/:photoId", PhotoController.DeletePhoto)
 	}
 	// comments
-	router.POST("/comments", CommentController.CreateComment)
-	router.GET("/comments", CommentController.GetComments)
-	router.PUT("/comments/:commentId", CommentController.UpdateComment)
-	router.DELETE("/comments/:commentId", CommentController.DeleteComment)
+	commentRouter := router.Group("/comments")
+	{
+		commentRouter.POST("/", CommentController.CreateComment)
+		commentRouter.GET("/", CommentController.GetComments)
+		commentRouter.Use(middlewares.AuthzComment())
+		commentRouter.PUT("/:commentId", CommentController.UpdateComment)
+		commentRouter.DELETE("/:commentId", CommentController.DeleteComment)
+	}
 	// social media
 	router.POST("/socialmedias", SocialMediaController.CreateSocialMedia)
 	router.GET("/socialmedias", SocialMediaController.GetSocialMedias)
