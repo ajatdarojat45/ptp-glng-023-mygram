@@ -29,10 +29,14 @@ func main(){
 	router.PUT("/users/:userId", UserController.UserUpdate)
 	router.DELETE("/users", UserController.UserDelete)
 	// photos
-	router.POST("/photos", PhotoController.CreatedPhoto)
-	router.GET("/photos", PhotoController.GetPhotos)
-	router.PUT("/photos/:photoId", PhotoController.UpdatePhoto)
-	router.DELETE("/photos/:photoId", PhotoController.DeletePhoto)
+	photoRouter := router.Group("/photos")
+	{
+		photoRouter.POST("/", PhotoController.CreatedPhoto)
+		photoRouter.GET("/", PhotoController.GetPhotos)
+		photoRouter.Use(middlewares.AuthzPhoto())
+		photoRouter.PUT("/:photoId", PhotoController.UpdatePhoto)
+		photoRouter.DELETE("/:photoId", PhotoController.DeletePhoto)
+	}
 	// comments
 	router.POST("/comments", CommentController.CreateComment)
 	router.GET("/comments", CommentController.GetComments)

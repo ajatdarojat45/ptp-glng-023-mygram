@@ -19,7 +19,9 @@ func AuthJWT() gin.HandlerFunc {
 		if auth == "" {
 			fmt.Println("Bad Authorization")
 			c.AbortWithError(http.StatusBadRequest, errors.New("Bad Authorization"))
-			c.JSON(http.StatusBadRequest, nil)
+			c.JSON(401, gin.H{
+				"message": "Unautorized",
+			})
 			return
 		}
 
@@ -27,11 +29,17 @@ func AuthJWT() gin.HandlerFunc {
 		if len(authSplit) != 2 {
 			fmt.Println("Bad Authorization")
 			c.AbortWithError(http.StatusBadRequest, errors.New("Bad Authorization"))
+			c.JSON(401, gin.H{
+				"message": "Unautorized",
+			})
 			return
 		}
 		if authSplit[0] != "Bearer" {
 			fmt.Println("Bad Authorization")
 			c.AbortWithError(http.StatusBadRequest, errors.New("Bad Authorization"))
+			c.JSON(401, gin.H{
+				"message": "Unautorized",
+			})
 			return
 		}
 
@@ -39,6 +47,9 @@ func AuthJWT() gin.HandlerFunc {
 		if err != nil {
 			fmt.Println("Bad Authorization")
 			c.AbortWithError(http.StatusBadRequest, errors.New("Bad Authorization"))
+			c.JSON(401, gin.H{
+				"message": "Unautorized",
+			})
 			return
 		}
 
@@ -49,9 +60,15 @@ func AuthJWT() gin.HandlerFunc {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				fmt.Println("Username not found")
 				c.AbortWithError(http.StatusBadRequest, errors.New("Username not found"))
+				c.JSON(401, gin.H{
+					"message": "Unautorized",
+				})
 				return
 			}
 			c.AbortWithError(http.StatusInternalServerError, err)
+			c.JSON(401, gin.H{
+				"message": "Unautorized",
+			})
 			return
 		}
 		c.Set("userId", strconv.FormatInt(int64(dbResult.ID), 10))
