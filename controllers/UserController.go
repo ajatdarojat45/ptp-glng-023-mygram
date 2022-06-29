@@ -142,6 +142,7 @@ func (db *UserDB) UserUpdate(c *gin.Context){
 	}
 
 	var user models.User
+	var findUser models.User
 	errUser := db.DB.First(&user, userId).Error
 	if errUser != nil {
 		c.JSON(404, gin.H{
@@ -155,6 +156,44 @@ func (db *UserDB) UserUpdate(c *gin.Context){
 		fmt.Println("error found: ", err)
 		c.JSON(400, gin.H{
 			"result": "Bad Request",
+		})
+		return
+	}
+
+	if req.Email == "" {
+		c.JSON(400, gin.H{
+			"message": "Email is required",
+		})
+		return
+	}
+
+	if req.Username == "" {
+		c.JSON(400, gin.H{
+			"message": "Username is required",
+		})
+		return
+	}
+
+	_, errMailFormat := mail.ParseAddress(req.Email)
+	if errMailFormat != nil {
+		c.JSON(400, gin.H{
+			"message": "Email format is warong",
+		})
+		return
+	}
+
+	db.DB.Where("email = ?", req.Email).First(&findUser)
+	if findUser != (models.User{}) {
+		c.JSON(400, gin.H{
+			"message": "Email already used",
+		})
+		return
+	}
+
+	db.DB.Where("username = ?", req.Username).First(&findUser)
+	if findUser != (models.User{}) {
+		c.JSON(400, gin.H{
+			"message": "Username already used",
 		})
 		return
 	}
