@@ -101,7 +101,7 @@ func (db *PhotoDB) UpdatePhoto(c *gin.Context){
 		return
 	}
 
-	c.JSON(201, gin.H{
+	c.JSON(200, gin.H{
 		"id": photo.ID,
 		"title": photo.Title,
 		"caption": photo.Caption,
@@ -111,8 +111,38 @@ func (db *PhotoDB) UpdatePhoto(c *gin.Context){
 	})
 }
 
-func (db *UserDB) DeletePhoto(c *gin.Context){
-	c.JSON(201, gin.H{
-		"message": "Your photo has been successfully deleted",
-	})
+func (db *PhotoDB) DeletePhoto(c *gin.Context){
+	var (
+		photo models.Photo
+	)
+
+	id := c.Param("id")
+	photoId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	err := db.DB.First(&photo, photoId).Error
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "Data not found",
+		})
+		return 
+	} else {
+		errDelete := db.DB.Delete(&photo).Error
+		if errDelete != nil {
+			c.JSON(500, gin.H{
+				"message": "Internal server error",
+			})
+			return 
+		}else {
+			c.JSON(200, gin.H{
+				"message": "Your photo has been successfully deleted",
+			})
+			return 
+		}
+	}
 }

@@ -28,6 +28,7 @@ func main(){
 	router.POST("/photos", PhotoController.CreatedPhoto)
 	router.GET("/photos", PhotoController.GetPhotos)
 	router.PUT("/photos/:id", PhotoController.UpdatePhoto)
+	router.DELETE("/photos/:id", PhotoController.DeletePhoto)
 
 	router.Run(":3000")
 }
