@@ -14,6 +14,7 @@ func main(){
 	UserController := &controllers.UserDB{DB: db}
 	PhotoController := &controllers.PhotoDB{DB: db}
 	CommentController := &controllers.CommentDB{DB: db}
+	SocialMediaController := &controllers.SocialMediaDB{DB: db}
 
 	router.GET("/", func(c *gin.Context){
 		c.JSON(http.StatusOK, gin.H{
@@ -37,6 +38,8 @@ func main(){
 	router.GET("/comments", CommentController.GetComments)
 	router.PUT("/comments/:commentId", CommentController.UpdateComment)
 	router.DELETE("/comments/:commentId", CommentController.DeleteComment)
+	// social media
+	router.POST("/socialmedias", SocialMediaController.CreateSocialMedia)
 
 	router.Run(":3000")
 }

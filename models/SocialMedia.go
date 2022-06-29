@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 type SocialMedia struct {
@@ -9,5 +10,7 @@ type SocialMedia struct {
 	ID uint `gorm:"primaryKey"`
 	Name string `json:"name"`
 	Social_Media_Url string `json:"social_media_url"`
-	UserId int `json:"user_id"`
+	User_Id int `json:"user_id"`
+	Created_At time.Time `json:"created_at"`
+	Updated_At time.Time `json:"updated_at"`
 }
