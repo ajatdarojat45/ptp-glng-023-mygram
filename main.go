@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"mygram/config"
 	"mygram/controllers"
+	"mygram/middlewares"
 )
 
 func main(){
@@ -21,6 +22,8 @@ func main(){
 
 	router.POST("/users/register", UserController.Register)
 	router.POST("/users/login", UserController.Login)
+	router.Use(middlewares.AuthJWT())
+	router.PUT("/users", UserController.UserUpdate)
 	router.POST("/photos", PhotoController.CreatedPhoto)
 
 	router.Run(":3000")

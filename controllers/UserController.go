@@ -7,6 +7,7 @@ import(
 	"net/http"
 	"golang.org/x/crypto/bcrypt"
 	"mygram/helpers"
+	"fmt"
 )
 
 type UserDB struct {
@@ -57,7 +58,7 @@ func (db *UserDB) Login(c *gin.Context){
 		return
 	}
 
-	token := helpers.GenerateToken(req.Username)
+	token := helpers.GenerateToken(dbResult.Username)
 
 	c.JSON(200, gin.H{
 		"token": token,
@@ -65,11 +66,39 @@ func (db *UserDB) Login(c *gin.Context){
 }
 
 func (db *UserDB) UserUpdate(c *gin.Context){
-	c.JSON(201, gin.H{
-		"id": "int",
-		"age": "int",
-		"email": "string",
-		"username": "string",
+	userId := c.GetString("userId")
+	var user models.User
+	errUser := db.DB.First(&user, userId).Error
+	if errUser != nil {
+		c.JSON(400, gin.H{
+			"result": "Data not found",
+		})
+		return
+	}
+
+	req := models.User{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Println("error found: ", err)
+		c.JSON(400, gin.H{
+			"result": "Bad Request",
+		})
+		return
+	}
+
+	errUpdate := db.DB.Model(&user).Updates(models.User{Username: req.Username, Email: req.Email}).Error
+	if errUpdate != nil {
+		c.JSON(500, gin.H{
+			"result": "internal server error",
+		})
+		return
+	}
+	
+	c.JSON(200, gin.H{
+		"id": user.ID,
+		"email": user.Email,
+		"username": user.Username,
+		"age": user.Age,
+		"updated_at": user.UpdatedAt,
 	})
 }
 

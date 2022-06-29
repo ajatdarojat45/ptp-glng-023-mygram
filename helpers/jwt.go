@@ -28,10 +28,6 @@ func VerifyToken(token string) (jwt.MapClaims, error) {
 		return []byte(secretkey), nil
 	})
 
-	// if !parseToken.Valid {
-
-	// }
-
 	if _, ok := parseToken.Claims.(jwt.MapClaims); !ok && !parseToken.Valid {
 		return nil, errResponse
 	}
