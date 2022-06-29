@@ -66,3 +66,47 @@ func (db *SocialMediaDB) GetSocialMedias(c *gin.Context){
 		"social_medias": socialMediasRes,
 	})
 }
+
+func (db *SocialMediaDB) UpdateSocialMedia(c *gin.Context){
+	id := c.Param("socialMediaId")
+	socialMediaId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "params socialMediaId is required",
+		})
+		return
+	}
+
+	var socialMedia models.SocialMedia
+	errComment := db.DB.First(&socialMedia, socialMediaId).Error
+	if errComment != nil {
+		c.JSON(400, gin.H{
+			"message": "Data not found",
+		})
+		return
+	}
+
+	req := models.SocialMedia{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	errUpdate := db.DB.Model(&socialMedia).Updates(models.SocialMedia{Name: req.Name, Social_Media_Url: req.Social_Media_Url}).Error
+	if errUpdate != nil {
+		c.JSON(500, gin.H{
+			"message": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(201, gin.H{
+		"id": socialMedia.ID,
+		"name": socialMedia.Name,
+		"social_media_url": socialMedia.Social_Media_Url,
+		"user_id": socialMedia.User_Id,
+		"created_at": socialMedia.Created_At,
+	})
+}
