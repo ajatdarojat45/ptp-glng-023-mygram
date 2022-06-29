@@ -9,6 +9,7 @@ import(
 	"mygram/helpers"
 	"fmt"
 	"strconv"
+	"net/mail"
 )
 
 type UserDB struct {
@@ -16,13 +17,76 @@ type UserDB struct {
 }
 
 func (db *UserDB) Register(c *gin.Context){
-	var req models.User
+	var (
+		req models.User
+		findUser models.User
+	)
 
 	err := c.ShouldBindJSON(&req);
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	if req.Email == "" {
+		c.JSON(400, gin.H{
+			"message": "Email is required",
+		})
+		return
+	}
+
+	if req.Username == "" {
+		c.JSON(400, gin.H{
+			"message": "Username is required",
+		})
+		return
+	}
+
+	if req.Password == "" {
+		c.JSON(400, gin.H{
+			"message": "Password is required",
+		})
+		return
+	}
+
+	if len(req.Password) < 6 {
+		c.JSON(400, gin.H{
+			"message": "Minimun length of password is 6 char",
+		})
+		return
+	}
+
+	if req.Age < 8 {
+		c.JSON(400, gin.H{
+			"message": "Minimun age is 8 years",
+		})
+		return
+	}
+
+	_, errMailFormat := mail.ParseAddress(req.Email)
+	if errMailFormat != nil {
+		c.JSON(400, gin.H{
+			"message": "Email format is warong",
+		})
+		return
+	}
+
+	db.DB.Where("email = ?", req.Email).First(&findUser)
+	if findUser != (models.User{}) {
+		c.JSON(400, gin.H{
+			"message": "Email already used",
+		})
+		return
+	}
+
+	db.DB.Where("username = ?", req.Username).First(&findUser)
+	if findUser != (models.User{}) {
+		c.JSON(400, gin.H{
+			"message": "Username already used",
+		})
+		return
+	}
+	
 
 	errCreate := db.DB.Debug().Create(&req).Error
 	if errCreate != nil {
