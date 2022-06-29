@@ -37,3 +37,32 @@ func (db *SocialMediaDB) CreateSocialMedia(c *gin.Context){
 		"created_at": req.Created_At,
 	})
 }
+
+func (db *SocialMediaDB) GetSocialMedias(c *gin.Context){
+	var (
+		socialMedias []models.SocialMedia
+		socialMediasRes []models.SocialMediaList
+	)
+
+	db.DB.Preload("User").Find(&socialMedias)
+
+	for _,el := range socialMedias{
+		socialMediasRes = append(socialMediasRes, models.SocialMediaList{
+			ID: el.ID,
+			Name: el.Name,
+			Social_Media_Url: el.Social_Media_Url,
+			User_Id: el.User_Id,
+			Created_At: el.Created_At,
+			Updated_At: el.Updated_At,
+			User: models.SocialMediaListUser{
+				ID: el.User.ID,
+				Email: el.User.Email,
+				Username: el.User.Username,
+			},
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"social_medias": socialMediasRes,
+	})
+}

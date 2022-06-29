@@ -40,6 +40,7 @@ func main(){
 	router.DELETE("/comments/:commentId", CommentController.DeleteComment)
 	// social media
 	router.POST("/socialmedias", SocialMediaController.CreateSocialMedia)
+	router.GET("/socialmedias", SocialMediaController.GetSocialMedias)
 
 	router.Run(":3000")
 }
