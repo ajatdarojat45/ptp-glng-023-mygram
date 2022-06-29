@@ -114,3 +114,39 @@ func (db *CommentDB) UpdateComment(c *gin.Context){
 		"created_at": comment.Created_At,
 	})
 }
+
+func (db *CommentDB) DeleteComment(c *gin.Context){
+	var (
+		comment models.Comment
+	)
+
+	id := c.Param("commentId")
+	commentId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	err := db.DB.First(&comment, commentId).Error
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "Data not found",
+		})
+		return 
+	} else {
+		errDelete := db.DB.Delete(&comment).Error
+		if errDelete != nil {
+			c.JSON(500, gin.H{
+				"message": "Internal server error",
+			})
+			return 
+		}else {
+			c.JSON(200, gin.H{
+				"message": "Your comment has been successfully deleted",
+			})
+			return 
+		}
+	}
+}
