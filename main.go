@@ -26,6 +26,7 @@ func main(){
 	router.PUT("/users/:id", UserController.UserUpdate)
 	router.DELETE("/users", UserController.UserDelete)
 	router.POST("/photos", PhotoController.CreatedPhoto)
+	router.GET("/photos", PhotoController.GetPhotos)
 
 	router.Run(":3000")
 }

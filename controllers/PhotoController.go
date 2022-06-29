@@ -6,6 +6,7 @@ import(
 	"mygram/models"
 	"net/http"
 	"strconv"
+	// "fmt"
 )
 
 type PhotoDB struct {
@@ -40,15 +41,29 @@ func (db *PhotoDB) CreatedPhoto(c *gin.Context){
 }
 
 func (db *PhotoDB) GetPhotos(c *gin.Context){
-	c.JSON(200, gin.H{
-		"id": "int",
-		"title": "string",
-		"caption": "int",
-		"photo_url": "string",
-		"user_id": "int",
-		"created_at": "date",
-		"user": "obj",
-	})
+	var (
+		photos []models.Photo
+		photosRes []models.PhotoList
+	)
+
+	db.DB.Preload("User").Find(&photos)
+	for _,el := range photos{
+		photosRes = append(photosRes, models.PhotoList{
+			ID: el.ID,
+			Title: el.Title,
+			Caption: el.Caption,
+			Photo_Url: el.Photo_Url,
+			User_Id: el.User_Id,
+			Created_At: el.Created_At,
+			Updated_At: el.Updated_At,
+			User: models.PhotoListUser{
+				Email: el.User.Email,
+				Username: el.User.Username,
+			},
+		})
+	}
+
+	c.JSON(200, photosRes)
 }
 
 func (db *PhotoDB) UpdatePhoto(c *gin.Context){
