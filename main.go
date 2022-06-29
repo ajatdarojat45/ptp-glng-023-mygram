@@ -42,6 +42,7 @@ func main(){
 	router.POST("/socialmedias", SocialMediaController.CreateSocialMedia)
 	router.GET("/socialmedias", SocialMediaController.GetSocialMedias)
 	router.PUT("/socialmedias/:socialMediaId", SocialMediaController.UpdateSocialMedia)
+	router.DELETE("/socialmedias/:socialMediaId", SocialMediaController.DeleteSocialMedia)
 
 	router.Run(":3000")
 }

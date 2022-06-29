@@ -110,3 +110,39 @@ func (db *SocialMediaDB) UpdateSocialMedia(c *gin.Context){
 		"created_at": socialMedia.Created_At,
 	})
 }
+
+func (db *SocialMediaDB) DeleteSocialMedia(c *gin.Context){
+	var (
+		socialMedia models.SocialMedia
+	)
+
+	id := c.Param("socialMediaId")
+	socialMediaId, errConvert := strconv.Atoi(id)
+	if errConvert != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	err := db.DB.First(&socialMedia, socialMediaId).Error
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "Data not found",
+		})
+		return 
+	} else {
+		errDelete := db.DB.Delete(&socialMedia).Error
+		if errDelete != nil {
+			c.JSON(500, gin.H{
+				"message": "Internal server error",
+			})
+			return 
+		}else {
+			c.JSON(200, gin.H{
+				"message": "Your social media has been successfully deleted",
+			})
+			return 
+		}
+	}
+}
