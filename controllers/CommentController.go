@@ -20,7 +20,16 @@ func (db *CommentDB) CreateComment(c *gin.Context){
 
 	err := c.ShouldBindJSON(&req);
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(400, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	if req.Message == "" {
+		c.JSON(400, gin.H{
+			"message": "Message is required",
+		})
 		return
 	}
 
@@ -94,6 +103,13 @@ func (db *CommentDB) UpdateComment(c *gin.Context){
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{
 			"message": "Bad Request",
+		})
+		return
+	}
+
+	if req.Message == "" {
+		c.JSON(400, gin.H{
+			"message": "Message is required",
 		})
 		return
 	}
