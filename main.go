@@ -47,10 +47,14 @@ func main(){
 		commentRouter.DELETE("/:commentId", CommentController.DeleteComment)
 	}
 	// social media
-	router.POST("/socialmedias", SocialMediaController.CreateSocialMedia)
-	router.GET("/socialmedias", SocialMediaController.GetSocialMedias)
-	router.PUT("/socialmedias/:socialMediaId", SocialMediaController.UpdateSocialMedia)
-	router.DELETE("/socialmedias/:socialMediaId", SocialMediaController.DeleteSocialMedia)
+	socialMediaRouter := router.Group("/socialmedias")
+	{
+		socialMediaRouter.POST("/", SocialMediaController.CreateSocialMedia)
+		socialMediaRouter.GET("/", SocialMediaController.GetSocialMedias)
+		socialMediaRouter.Use(middlewares.AuthzSocialMedia())
+		socialMediaRouter.PUT("/:socialMediaId", SocialMediaController.UpdateSocialMedia)
+		socialMediaRouter.DELETE("/:socialMediaId", SocialMediaController.DeleteSocialMedia)
+	}
 
 	router.Run(":3000")
 }
