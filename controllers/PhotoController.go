@@ -3,6 +3,9 @@ package controllers
 import(
 	"gorm.io/gorm"
 	"github.com/gin-gonic/gin"
+	"mygram/models"
+	"net/http"
+	"strconv"
 )
 
 type PhotoDB struct {
@@ -10,13 +13,29 @@ type PhotoDB struct {
 }
 
 func (db *PhotoDB) CreatedPhoto(c *gin.Context){
+	var req models.Photo
+	userId := c.GetString("userId")
+	userIdConvert, _ := strconv.Atoi(userId)
+	req.User_Id = userIdConvert
+
+	err := c.ShouldBindJSON(&req);
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errCreate := db.DB.Debug().Create(&req).Error
+	if errCreate != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
 	c.JSON(201, gin.H{
-		"id": "int",
-		"title": "string",
-		"caption": "int",
-		"photo_url": "string",
-		"user_id": "int",
-		"created_at": "date",
+		"id": req.ID,
+		"title": req.Title,
+		"caption": req.Caption,
+		"photo_url": req.Photo_Url,
+		"user_id": req.User_Id,
+		"created_at": req.Created_At,
 	})
 }
 
