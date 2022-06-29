@@ -24,6 +24,20 @@ func (db *SocialMediaDB) CreateSocialMedia(c *gin.Context){
 		return
 	}
 
+	if req.Name == "" {
+		c.JSON(400, gin.H{
+			"message": "Name is required",
+		})
+		return
+	}
+
+	if req.Social_Media_Url == "" {
+		c.JSON(400, gin.H{
+			"message": "Social_Media_Url is required",
+		})
+		return
+	}
+
 	errCreate := db.DB.Debug().Create(&req).Error
 	if errCreate != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -90,6 +104,20 @@ func (db *SocialMediaDB) UpdateSocialMedia(c *gin.Context){
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{
 			"message": "Bad Request",
+		})
+		return
+	}
+
+	if req.Name == "" {
+		c.JSON(400, gin.H{
+			"message": "Name is required",
+		})
+		return
+	}
+
+	if req.Social_Media_Url == "" {
+		c.JSON(400, gin.H{
+			"message": "Social_Media_Url is required",
 		})
 		return
 	}
