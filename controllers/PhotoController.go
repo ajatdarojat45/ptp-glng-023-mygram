@@ -106,6 +106,20 @@ func (db *PhotoDB) UpdatePhoto(c *gin.Context){
 		return
 	}
 
+	if req.Title == "" {
+		c.JSON(400, gin.H{
+			"message": "Title is required",
+		})
+		return
+	}
+
+	if req.Photo_Url == "" {
+		c.JSON(400, gin.H{
+			"message": "Photo_Url is required",
+		})
+		return
+	}
+
 	errUpdate := db.DB.Model(&photo).Updates(models.Photo{Title: req.Title, Caption: req.Caption, Photo_Url: req.Photo_Url}).Error
 	if errUpdate != nil {
 		c.JSON(500, gin.H{
